@@ -1,11 +1,9 @@
 from langchain_ollama import ChatOllama
+from config import OLLAMA_MODEL
 
 
 def get_llm():
-    """
-    Returns the local Ollama LLM instance.
-    """
     return ChatOllama(
-        model="llama3:latest",
+        model=OLLAMA_MODEL,
         temperature=0
     )
