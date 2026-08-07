@@ -2,13 +2,13 @@ from langchain_core.prompts import ChatPromptTemplate
 
 from app.llm.ollama_model import get_llm
 from app.retrieval.retriever import Retriever
-
+from app.factories.components import get_llm_instance
 
 class RAGChain:
 
     def __init__(self):
 
-        self.llm = get_llm()
+        self.llm = get_llm_instance()
 
         self.retriever = Retriever()
 

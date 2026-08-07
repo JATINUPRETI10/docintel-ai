@@ -2,7 +2,7 @@ from app.loaders.document_loader import DocumentLoader
 from app.services.text_splitter import TextSplitter
 from app.embeddings.embedding_model import get_embedding_model
 from app.vectorstore.chroma_store import ChromaStore
-
+from app.factories.components import get_vector_store
 
 class IndexManager:
 
@@ -10,7 +10,7 @@ class IndexManager:
         self.loader = DocumentLoader()
         self.splitter = TextSplitter()
         self.embedding_model = get_embedding_model()
-        self.vector_store = ChromaStore(self.embedding_model)
+        self.vector_store = get_vector_store()
 
     def index_document(self, pdf_path):
 
