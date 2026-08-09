@@ -26,4 +26,5 @@ Thumbs.db
 .pytest_cache/
 
 # Logs
-*.log
+*.logeval_venv/
+evaluation/results/

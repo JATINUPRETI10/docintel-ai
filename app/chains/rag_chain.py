@@ -1,8 +1,9 @@
 from langchain_core.prompts import ChatPromptTemplate
+from langsmith import traceable
 
-from app.llm.ollama_model import get_llm
-from app.retrieval.retriever import Retriever
 from app.factories.components import get_llm_instance
+from app.retrieval.retriever import Retriever
+
 
 class RAGChain:
 
@@ -14,11 +15,14 @@ class RAGChain:
 
         self.prompt = ChatPromptTemplate.from_template(
             """
-You are a helpful AI assistant.
+You are a Question Answering AI.
 
-Answer ONLY using the context below.
+Rules:
 
-If the answer is not present in the context, reply:
+1. Answer ONLY using the provided context.
+2. Never use outside knowledge.
+3. Never guess.
+4. If the answer is not in the context, reply exactly:
 
 "I couldn't find this information in the uploaded document."
 
@@ -32,10 +36,18 @@ Answer:
 """
         )
 
+    @traceable(name="RAG QA")
     def ask(self, question):
 
         # Retrieve relevant chunks
         docs = self.retriever.retrieve(question)
+
+        # No relevant chunks found
+        if not docs:
+            return {
+                "answer": "I couldn't find any relevant information in the uploaded document.",
+                "documents": [],
+            }
 
         # Build context
         context = "\n\n".join(
@@ -53,21 +65,22 @@ Answer:
             }
         )
 
-        # Collect source pages
-        sources = []
+        # Collect retrieval metadata
+        retrieved_docs = []
 
         for doc in docs:
-            page = doc.metadata.get("page", "Unknown")
 
-            if page != "Unknown":
-                sources.append(f"Page {page + 1}")
-            else:
-                sources.append("Unknown")
-
-        # Remove duplicate pages
-        sources = list(dict.fromkeys(sources))
+            retrieved_docs.append(
+                {
+                    "document": doc.metadata.get("source", "Unknown"),
+                    "page": doc.metadata.get("page", 0) + 1,
+                    "score": doc.metadata.get("score"),
+                    "length": len(doc.page_content),
+                    "content": doc.page_content,
+                }
+            )
 
         return {
             "answer": response.content,
-            "sources": sources,
+            "documents": retrieved_docs,
         }

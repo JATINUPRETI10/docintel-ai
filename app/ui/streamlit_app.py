@@ -1,3 +1,5 @@
+from app.utils.langsmith_config import *
+
 import os
 import streamlit as st
 
@@ -11,7 +13,7 @@ from app.core.document_qa_service import DocumentQAService
 st.set_page_config(
     page_title="DocIntel AI",
     page_icon="📄",
-    layout="wide"
+    layout="wide",
 )
 
 
@@ -43,6 +45,7 @@ if "document_indexed" not in st.session_state:
 # =====================================================
 
 st.title("📄 DocIntel AI")
+
 st.write(
     "Chat with your PDF documents using Retrieval-Augmented Generation (RAG)."
 )
@@ -94,9 +97,22 @@ if st.sidebar.button("🗑 Clear Chat"):
 
     st.rerun()
 
+# =====================================================
+# Developer Mode
+# =====================================================
+
+developer_mode = st.sidebar.toggle(
+    "🛠 Developer Mode",
+    value=False
+)
+
 
 # =====================================================
-# Display Previous Messages
+# Display Previous Chat
+# =====================================================
+
+# =====================================================
+# Display Previous Chat
 # =====================================================
 
 for message in st.session_state.messages:
@@ -105,34 +121,67 @@ for message in st.session_state.messages:
 
         st.markdown(message["content"])
 
-        if message["role"] == "assistant":
+        if (
+            developer_mode
+            and message["role"] == "assistant"
+            and "documents" in message
+        ):
 
-            if "sources" in message:
+            with st.expander("📚 Retrieval Details"):
 
-                with st.expander("📚 Sources"):
+                for i, doc in enumerate(
+                    message["documents"],
+                    start=1
+                ):
 
-                    for source in message["sources"]:
-                        st.write(f"📄 {source}")
+                    score = doc.get("score")
 
+                    if score is None:
+                        icon = "⚪"
+                        label = "N/A"
 
+                    elif score < 0.30:
+                        icon = "🟢"
+                        label = "Excellent"
+
+                    elif score < 0.60:
+                        icon = "🟡"
+                        label = "Good"
+
+                    else:
+                        icon = "🔴"
+                        label = "Weak"
+
+                    st.markdown(f"### Chunk {i}")
+
+                    st.markdown(f"**📄 Page:** {doc['page']}")
+
+                    st.markdown(
+                        f"**Retrieval Distance:** {icon} {score} ({label})"
+                    )
+
+                    st.code(doc["content"])
+
+                    st.divider()
 # =====================================================
-# Chat Input
+# Chat
 # =====================================================
 
 question = st.chat_input(
     "Ask something about your document..."
 )
 
-
 if question:
 
     if not st.session_state.document_indexed:
 
-        st.warning("⚠ Please upload and index a document first.")
+        st.warning(
+            "⚠ Please upload and index a document first."
+        )
 
         st.stop()
 
-    # ---------------- User Message ----------------
+    # ---------------- User ----------------
 
     st.session_state.messages.append(
         {
@@ -144,39 +193,69 @@ if question:
     with st.chat_message("user"):
         st.markdown(question)
 
-    # ---------------- Assistant ----------------
-
     with st.chat_message("assistant"):
 
-        with st.spinner("Thinking..."):
+     with st.spinner("Thinking..."):
 
-            try:
+        try:
 
-                result = service.ask(question)
+            result = service.ask(question)
 
-                answer = result["answer"]
+            answer = result["answer"]
 
-                sources = result["sources"]
+            documents = result["documents"]
 
-                st.markdown(answer)
+            st.markdown(answer)
 
-                with st.expander("📚 Sources"):
+            if developer_mode:
 
-                    for source in sources:
-                        st.write(f"📄 {source}")
+                with st.expander("📚 Retrieval Details"):
 
-            except Exception as e:
+                    st.info(
+                        f"Retrieved {len(documents)} chunks"
+                    )
 
-                answer = f"Error: {e}"
+                    for i, doc in enumerate(
+                        documents,
+                        start=1
+                    ):
 
-                sources = []
+                        score = doc.get("score")
 
-                st.error(answer)
+                        if score is None:
+                            icon = "⚪"
+                            label = "N/A"
 
-    st.session_state.messages.append(
-        {
-            "role": "assistant",
-            "content": answer,
-            "sources": sources
-        }
-    )
+                        elif score < 0.30:
+                            icon = "🟢"
+                            label = "Excellent"
+
+                        elif score < 0.60:
+                            icon = "🟡"
+                            label = "Good"
+
+                        else:
+                            icon = "🔴"
+                            label = "Weak"
+
+                        st.markdown(f"### Chunk {i}")
+
+                        st.markdown(
+                            f"**📄 Page:** {doc['page']}"
+                        )
+
+                        st.markdown(
+                            f"**Retrieval Distance:** {icon} {score} ({label})"
+                        )
+
+                        st.code(doc["content"])
+
+                        st.divider()
+
+        except Exception as e:
+
+            answer = f"Error: {e}"
+
+            documents = []
+
+            st.error(answer)
