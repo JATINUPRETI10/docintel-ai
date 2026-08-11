@@ -148,6 +148,7 @@ Run the tests with:
 
 python -m pytest tests -v
 Project Structure
+```text
 docintel-ai/
 │
 ├── app/
@@ -179,7 +180,7 @@ docintel-ai/
 ├── requirements.txt
 └── README.md
 Installation
-
+```
 Clone the repository:
 
 git clone <YOUR_GITHUB_REPOSITORY_URL>
