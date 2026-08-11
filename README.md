@@ -53,6 +53,9 @@ It allows users to upload a document, index its content into a vector database, 
                          |
                          v
                   Streamlit Interface
+
+
+```
 RAG Workflow
 1. Document Loading
 
