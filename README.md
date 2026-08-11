@@ -56,155 +56,35 @@ It allows users to upload a document, index its content into a vector database, 
 
 
 ```
-RAG Workflow
-1. Document Loading
 
-The uploaded document is processed using LangChain document loaders.
+## Installation
 
-Supported formats:
+### 1. Clone the Repository
 
-PDF
-DOCX
-TXT
-2. Text Splitting
-
-Documents are divided into smaller chunks before embedding.
-
-Current configuration:
-
-Chunk Size: 500
-Chunk Overlap: 100
-3. Embedding
-
-The project uses:
-
-BAAI/bge-small-en-v1.5
-
-to convert document chunks into vector representations.
-
-4. Vector Storage
-
-The embeddings are stored in ChromaDB.
-
-The retriever uses semantic similarity to find relevant chunks for a user's question.
-
-5. Retrieval-Augmented Generation
-
-The retrieved chunks are passed to the RAG chain along with the user's question.
-
-The LLM then generates the final response using the retrieved document context.
-
-6. LLM
-
-The project currently uses:
-
-Ollama
-└── llama3:latest
-
-This allows the application to run LLM inference locally.
-
-Evaluation
-
-The project uses RAGAS to evaluate the quality of the RAG pipeline.
-
-The following metrics are used:
-
-Faithfulness
-Answer Relevancy
-Context Precision
-Context Recall
-Latest Evaluation Results
-Metric	Score
-Faithfulness	1.0000
-Answer Relevancy	0.8817
-Context Precision	0.9707
-Context Recall	0.8971
-
-These results were obtained from a 10-question evaluation dataset.
-
-Testing
-
-The project includes automated tests using pytest.
-
-Latest test result:
-
-14 passed
-
-The test suite covers:
-
-ChromaDB
-Embeddings
-Document indexing
-LLM
-Document loading
-RAG chain
-Retriever
-Document QA service
-Input validation
-Text splitting
-Duplicate document indexing
-
-Run the tests with:
-
-python -m pytest tests -v
-Project Structure
-```text
-docintel-ai/
-│
-├── app/
-│   ├── chains/
-│   ├── core/
-│   ├── embeddings/
-│   ├── factories/
-│   ├── llm/
-│   ├── loaders/
-│   ├── prompts/
-│   ├── retrieval/
-│   ├── services/
-│   ├── ui/
-│   ├── utils/
-│   └── vectorstore/
-│
-├── documents/
-│
-├── evaluation/
-│   ├── evaluation.py
-│   ├── collect_results.py
-│   └── results/
-│
-├── tests/
-│
-├── chroma_db/
-├── config.py
-├── main.py
-├── requirements.txt
-└── README.md
-Installation
-```
-Clone the repository:
-
+```bash
 git clone <YOUR_GITHUB_REPOSITORY_URL>
 cd docintel-ai
-
-Create a virtual environment:
-
+```
+2. Create a Virtual Environment
+```bash
 python -m venv venv
-
-Activate it on Windows:
-
+```
+4. Activate the Virtual Environment
+```bash
+Windows PowerShell:
 venv\Scripts\Activate.ps1
-
-Install dependencies:
-
+```
+4. Install Dependencies
+```bash
 pip install -r requirements.txt
+```
 Ollama Setup
 
-Install Ollama and make sure the required model is available:
+DocIntel AI uses Ollama with Llama 3 for local LLM inference.
 
+Install the Llama 3 Model
 ollama pull llama3
-
-Verify:
-
+Verify the Model
 ollama list
 
 The application is configured to use:
@@ -212,28 +92,59 @@ The application is configured to use:
 llama3:latest
 Running the Application
 
-From the project root:
+From the project root, run:
 
 python -m streamlit run app/ui/streamlit_app.py
 
-The application will be available at:
+After starting the application, use the Streamlit interface to:
 
-http://localhost:8501
-Using the Application
-Open the Streamlit application.
 Upload a PDF document.
 Click Index Document.
-Ask questions about the document.
+Ask questions about the uploaded document.
 Enable Developer Mode to inspect retrieved chunks and retrieval distances.
 Evaluation
 
-Run the RAGAS evaluation with:
+DocIntel AI uses RAGAS to evaluate the RAG pipeline.
+
+Run the evaluation with:
 
 python -m evaluation.evaluation
 
-The evaluation results are stored in:
+The evaluation uses the following metrics:
+
+Faithfulness
+Answer Relevancy
+Context Precision
+Context Recall
+
+Evaluation results are stored in:
 
 evaluation/results/ragas_results.csv
+Testing
+
+The project uses pytest for automated testing.
+
+Run the complete test suite:
+
+python -m pytest tests -v
+
+Current test result:
+
+14 passed
+
+The tests cover:
+
+Document loading
+Text splitting
+Embeddings
+ChromaDB
+Document indexing
+Duplicate document protection
+Retriever
+LLM
+RAG chain
+Document QA service
+Input validation
 Technologies Used
 Python
 LangChain
@@ -248,7 +159,7 @@ LangSmith
 Pytest
 Current Status
 
-The project currently has:
+The project currently includes:
 
 Working RAG pipeline
 Local LLM inference
@@ -269,5 +180,4 @@ Improved retrieval/reranking
 Streaming LLM responses
 Conversation memory
 Authentication
-Cloud deployment
 More extensive evaluation datasets
