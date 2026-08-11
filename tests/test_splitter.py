@@ -1,20 +1,50 @@
+from pathlib import Path
+
 from app.loaders.document_loader import DocumentLoader
 from app.services.text_splitter import TextSplitter
 
-loader = DocumentLoader()
-documents = loader.load("documents/An AI Newsletter Generation System using MCP and 1.pdf")
 
-splitter = TextSplitter()
+PDF_PATH = "documents/An AI Newsletter Generation System using MCP and 1.pdf"
 
-chunks = splitter.split_documents(documents)
 
-print(f"Pages Loaded : {len(documents)}")
-print(f"Chunks Created : {len(chunks)}")
+def test_text_splitter():
 
-print("-" * 80)
+    assert Path(PDF_PATH).exists(), (
+        f"Test PDF not found: {PDF_PATH}"
+    )
 
-print(chunks[0].page_content)
+    loader = DocumentLoader()
 
-print("-" * 80)
+    documents = loader.load(PDF_PATH)
 
-print(chunks[0].metadata)
+    assert len(documents) > 0
+
+    splitter = TextSplitter()
+
+    chunks = splitter.split_documents(
+        documents
+    )
+
+    assert chunks is not None
+    assert len(chunks) > 0
+
+    for chunk in chunks:
+
+        assert chunk.page_content
+        assert isinstance(
+            chunk.page_content,
+            str,
+        )
+
+        assert isinstance(
+            chunk.metadata,
+            dict,
+        )
+
+    print(
+        f"\nPages loaded: {len(documents)}"
+    )
+
+    print(
+        f"Chunks created: {len(chunks)}"
+    )

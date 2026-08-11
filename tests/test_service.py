@@ -1,99 +1,76 @@
-from app.core.document_qa_service import DocumentQAService
-
-
-# =====================================================
-# Initialize Service
-# =====================================================
-
-service = DocumentQAService()
-
-
-# =====================================================
-# Ask Question
-# =====================================================
-
-result = service.ask(
-    "Explain Model Context Protocol"
+from app.core.document_qa_service import (
+    DocumentQAService,
 )
 
 
-# =====================================================
-# Display Answer
-# =====================================================
+def test_document_qa_service():
 
-print("=" * 80)
+    service = DocumentQAService()
 
-print("ANSWER")
-print("=" * 80)
-
-print(result["answer"])
-
-
-# =====================================================
-# Display Retrieved Documents
-# =====================================================
-
-print("\n")
-print("=" * 80)
-
-print("RETRIEVED DOCUMENTS")
-print("=" * 80)
-
-
-documents = result.get(
-    "documents",
-    []
-)
-
-
-print(
-    f"Retrieved {len(documents)} chunks"
-)
-
-
-for index, document in enumerate(
-    documents,
-    start=1
-):
-
-    print("\n" + "-" * 80)
-
-    print(
-        f"Chunk {index}"
+    result = service.ask(
+        "Explain Model Context Protocol"
     )
 
-    print(
-        f"Document: "
-        f"{document.get('document', 'Unknown')}"
+    # -----------------------------
+    # Validate result
+    # -----------------------------
+
+    assert isinstance(
+        result,
+        dict,
     )
 
-    print(
-        f"Page: "
-        f"{document.get('page', 'Unknown')}"
+    assert "answer" in result
+    assert "documents" in result
+
+    # -----------------------------
+    # Validate answer
+    # -----------------------------
+
+    answer = result["answer"]
+
+    assert isinstance(
+        answer,
+        str,
     )
 
-    print(
-        f"Score: "
-        f"{document.get('score', 'N/A')}"
+    assert len(
+        answer.strip()
+    ) > 0
+
+    # -----------------------------
+    # Validate documents
+    # -----------------------------
+
+    documents = result["documents"]
+
+    assert isinstance(
+        documents,
+        list,
     )
 
-    print(
-        f"Length: "
-        f"{document.get('length', 0)} characters"
-    )
+    assert len(documents) > 0
 
-    print("\nContent:")
+    for document in documents:
 
-    print(
-        document.get(
-            "content",
-            ""
+        assert isinstance(
+            document,
+            dict,
         )
+
+        assert "document" in document
+        assert "page" in document
+        assert "score" in document
+        assert "length" in document
+        assert "content" in document
+
+        assert document["content"]
+
+    print(
+        f"\nAnswer: {answer}"
     )
 
-print("\n")
-print("=" * 80)
-
-print("TEST COMPLETED")
-
-print("=" * 80)
+    print(
+        f"Retrieved chunks: "
+        f"{len(documents)}"
+    )

@@ -1,10 +1,31 @@
-from app.embeddings.embedding_model import get_embedding_model
-from app.vectorstore.chroma_store import ChromaStore
+from app.embeddings.embedding_model import (
+    get_embedding_model,
+)
 
-embedding_model = get_embedding_model()
+from app.vectorstore.chroma_store import (
+    ChromaStore,
+)
 
-db = ChromaStore(embedding_model)
 
-print("Database Created Successfully!")
+def test_chroma_store():
 
-print("Current Documents:", db.count())
+    embedding_model = get_embedding_model()
+
+    db = ChromaStore(
+        embedding_model
+    )
+
+    assert db is not None
+
+    count = db.count()
+
+    assert isinstance(
+        count,
+        int,
+    )
+
+    assert count >= 0
+
+    print(
+        f"\nChromaDB document count: {count}"
+    )

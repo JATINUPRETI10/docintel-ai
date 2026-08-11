@@ -1,4 +1,5 @@
 from langchain_chroma import Chroma
+
 from config import CHROMA_PATH
 
 
@@ -13,17 +14,65 @@ class ChromaStore:
             embedding_function=self.embedding_model,
         )
 
-    def add_documents(self, documents):
-        self.db.add_documents(documents)
+    # -------------------------------------------------
+    # Add documents
+    # -------------------------------------------------
 
-    def similarity_search_with_score(self, query, k=5):
-        return self.db.similarity_search_with_score(
-            query=query,
-            k=k
+    def add_documents(self, documents):
+
+        return self.db.add_documents(
+            documents
         )
 
+    # -------------------------------------------------
+    # Check whether a document is already indexed
+    # -------------------------------------------------
+
+    def document_exists(self, document_hash):
+
+        results = self.db.get(
+            where={
+                "document_hash": document_hash
+            },
+            limit=1,
+        )
+
+        ids = results.get(
+            "ids",
+            []
+        )
+
+        return len(ids) > 0
+
+    # -------------------------------------------------
+    # Similarity search
+    # -------------------------------------------------
+
+    def similarity_search_with_score(
+        self,
+        query,
+        k=5,
+    ):
+
+        return self.db.similarity_search_with_score(
+            query=query,
+            k=k,
+        )
+
+    # -------------------------------------------------
+    # Retriever
+    # -------------------------------------------------
+
     def as_retriever(self, **kwargs):
-        return self.db.as_retriever(**kwargs)
+
+        return self.db.as_retriever(
+            **kwargs
+        )
+
+    # -------------------------------------------------
+    # Count
+    # -------------------------------------------------
 
     def count(self):
+
         return self.db._collection.count()

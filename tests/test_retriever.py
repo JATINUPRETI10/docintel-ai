@@ -1,20 +1,40 @@
-from app.retrieval.retriever import Retriever
-
-retriever = Retriever()
-
-docs = retriever.retrieve(
-    "Explain Model Context Protocol"
+from app.retrieval.retriever import (
+    Retriever,
 )
 
-print(f"Retrieved {len(docs)} documents\n")
 
-for i, doc in enumerate(docs, start=1):
+def test_retriever():
 
-    print("=" * 80)
-    print(f"Chunk {i}")
-    print("=" * 80)
+    retriever = Retriever()
 
-    print(doc.page_content[:500])
+    docs = retriever.retrieve(
+        "Explain Model Context Protocol"
+    )
 
-    print("\nMetadata:")
-    print(doc.metadata)
+    assert docs is not None
+    assert isinstance(
+        docs,
+        list,
+    )
+
+    assert len(docs) > 0
+
+    for doc in docs:
+
+        assert doc.page_content
+
+        assert isinstance(
+            doc.page_content,
+            str,
+        )
+
+        assert isinstance(
+            doc.metadata,
+            dict,
+        )
+
+        assert "score" in doc.metadata
+
+    print(
+        f"\nRetrieved documents: {len(docs)}"
+    )

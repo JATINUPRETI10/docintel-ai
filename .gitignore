@@ -3,29 +3,30 @@ __pycache__/
 *.py[cod]
 *.pyo
 
-# Virtual Environment
+# Virtual environments
 venv/
 .venv/
+eval_venv/
 
 # Environment variables
 .env
+.env.*
 
-# Chroma Vector Database
+# Chroma vector database
 chroma_db/
 
-# VS Code
-.vscode/
+# Uploaded documents
+documents/
 
-# macOS
-.DS_Store
-
-# Windows
-Thumbs.db
-
-# Pytest
+# Test/cache files
 .pytest_cache/
 
 # Logs
-*.logeval_venv/
-evaluation/results/
-eval_venv/
+*.log
+
+# IDE
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
