@@ -85,17 +85,13 @@ DocIntel AI uses Ollama with Llama 3 for local LLM inference.
 Install the Llama 3 Model
 ollama pull llama3
 Verify the Model
+```bash
 ollama list
-
-The application is configured to use:
-
-llama3:latest
-Running the Application
-
+```
 From the project root, run:
-
+```bash
 python -m streamlit run app/ui/streamlit_app.py
-
+```
 After starting the application, use the Streamlit interface to:
 
 Upload a PDF document.
@@ -107,9 +103,10 @@ Evaluation
 DocIntel AI uses RAGAS to evaluate the RAG pipeline.
 
 Run the evaluation with:
+```bash
 
 python -m evaluation.evaluation
-
+```
 The evaluation uses the following metrics:
 
 Faithfulness
@@ -125,12 +122,9 @@ Testing
 The project uses pytest for automated testing.
 
 Run the complete test suite:
-
+```bash
 python -m pytest tests -v
-
-Current test result:
-
-14 passed
+```
 
 The tests cover:
 
