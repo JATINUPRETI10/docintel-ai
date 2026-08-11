@@ -28,3 +28,4 @@ Thumbs.db
 # Logs
 *.logeval_venv/
 evaluation/results/
+eval_venv/
